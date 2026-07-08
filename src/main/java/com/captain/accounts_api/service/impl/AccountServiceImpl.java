@@ -1,0 +1,64 @@
+package com.captain.accounts_api.service.impl;
+
+import com.captain.accounts_api.constants.AccountConstants;
+import com.captain.accounts_api.dto.CustomerDto;
+import com.captain.accounts_api.entity.Account;
+import com.captain.accounts_api.entity.Customer;
+import com.captain.accounts_api.exception.CustomerAlreadyExistsException;
+import com.captain.accounts_api.mapper.CustomerMapper;
+import com.captain.accounts_api.repository.AccountRepository;
+import com.captain.accounts_api.repository.CustomerRepository;
+import com.captain.accounts_api.service.AccountService;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.Random;
+
+@Service
+public class AccountServiceImpl implements AccountService {
+
+    private AccountRepository accountRepository;
+    private CustomerRepository customerRepository;
+
+    public AccountServiceImpl(AccountRepository accountRepository,
+                              CustomerRepository customerRepository) {
+        this.accountRepository = accountRepository;
+        this.customerRepository = customerRepository;
+    }
+
+    @Override
+    public void createAccount(CustomerDto customerDto) {
+        Customer customer = CustomerMapper.toCustomer(customerDto);
+        Optional<Customer> optionalCustomer
+                = customerRepository.findByMobileNumber(customerDto.getMobileNumber());
+        if (optionalCustomer.isPresent()) {
+            throw new CustomerAlreadyExistsException("Customer already exists with this " +
+                    "mobileNumber: " + customerDto.getMobileNumber());
+        }
+        customer.setCreatedAt(LocalDateTime.now());
+        customer.setCreatedBy("Anonymous");
+        customer.setUpdatedAt(LocalDateTime.now());
+        customer.setUpdatedBy("Anonymous");
+        Customer saved = customerRepository.save(customer);
+        accountRepository.save(createNewAccount(saved));
+    }
+
+    private Account createNewAccount(Customer customer) {
+        Account account = new Account();
+        account.setCustomerId(customer.getCustomerId());
+
+        long accountNumber = 10000L + new Random().nextInt(900000);
+        account.setAccountNumber(accountNumber);
+
+        account.setAccountType(AccountConstants.SAVINGS);
+        account.setBranchAddress(AccountConstants.ADDRESS);
+
+        account.setCreatedAt(LocalDateTime.now());
+        account.setCreatedBy("Anonymous");
+        account.setUpdatedAt(LocalDateTime.now());
+        account.setUpdatedBy("Anonymous");
+
+        return account;
+    }
+}
