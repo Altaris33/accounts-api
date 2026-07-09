@@ -18,4 +18,36 @@ public class ErrorResponseDto {
         this.errorMsg = errorMsg;
         this.errorTime = errorTime;
     }
+
+    public String getApiPath() {
+        return apiPath;
+    }
+
+    public void setApiPath(String apiPath) {
+        this.apiPath = apiPath;
+    }
+
+    public HttpStatus getErrorCode() {
+        return errorCode;
+    }
+
+    public void setErrorCode(HttpStatus errorCode) {
+        this.errorCode = errorCode;
+    }
+
+    public String getErrorMsg() {
+        return errorMsg;
+    }
+
+    public void setErrorMsg(String errorMsg) {
+        this.errorMsg = errorMsg;
+    }
+
+    public LocalDateTime getErrorTime() {
+        return errorTime;
+    }
+
+    public void setErrorTime(LocalDateTime errorTime) {
+        this.errorTime = errorTime;
+    }
 }
