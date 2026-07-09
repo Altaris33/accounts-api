@@ -5,6 +5,8 @@ import com.captain.accounts_api.dto.CustomerDto;
 import com.captain.accounts_api.entity.Account;
 import com.captain.accounts_api.entity.Customer;
 import com.captain.accounts_api.exception.CustomerAlreadyExistsException;
+import com.captain.accounts_api.exception.ResourceNotFoundException;
+import com.captain.accounts_api.mapper.AccountMapper;
 import com.captain.accounts_api.mapper.CustomerMapper;
 import com.captain.accounts_api.repository.AccountRepository;
 import com.captain.accounts_api.repository.CustomerRepository;
@@ -60,5 +62,20 @@ public class AccountServiceImpl implements AccountService {
         account.setUpdatedBy("Anonymous");
 
         return account;
+    }
+
+    @Override
+    public CustomerDto fetchAccount(String mobileNumber) {
+        Customer customer = customerRepository.findByMobileNumber(mobileNumber).orElseThrow(
+                () -> new ResourceNotFoundException("Customer", "mobileNumber", mobileNumber)
+        );
+        Account account = accountRepository.findByCustomerId(customer.getCustomerId()).orElseThrow(
+                () -> new ResourceNotFoundException(
+                        "Account", "customerId", customer.getCustomerId().toString()
+                )
+        );
+        CustomerDto dto = CustomerMapper.toCustomerDto(customer);
+        dto.setAccountDto(AccountMapper.toAccountDto(account));
+        return dto;
     }
 }
