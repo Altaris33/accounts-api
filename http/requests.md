@@ -17,6 +17,24 @@ Content-Type: application/json
 ## Get all accounts
 
 ```http
-GET http://localhost:8080/api/accounts
+GET http://localhost:8080/api/fetch?mobileNumber=4354456778
 Accept: application/json
+```
+
+## Update Account Details
+
+```http
+PUT http://localhost:8080/api/update
+Content-Type: application/json
+
+{
+    "name": "Captain Falcon New Account",
+    "email": "captain-new@fzero.com",
+    "mobileNumber": "4354456778",
+    "accountDto": {
+        "accountNumber": 428932,
+        "accountType": "Savings",
+        "branchAddress": "123 Main Street, New York"
+    }
+}
 ```

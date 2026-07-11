@@ -1,6 +1,7 @@
 package com.captain.accounts_api.service.impl;
 
 import com.captain.accounts_api.constants.AccountConstants;
+import com.captain.accounts_api.dto.AccountDto;
 import com.captain.accounts_api.dto.CustomerDto;
 import com.captain.accounts_api.entity.Account;
 import com.captain.accounts_api.entity.Customer;
@@ -31,7 +32,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void createAccount(CustomerDto customerDto) {
-        Customer customer = CustomerMapper.toCustomer(customerDto);
+        Customer customer = CustomerMapper.toCustomer(customerDto, new Customer());
         Optional<Customer> optionalCustomer
                 = customerRepository.findByMobileNumber(customerDto.getMobileNumber());
         if (optionalCustomer.isPresent()) {
@@ -77,5 +78,30 @@ public class AccountServiceImpl implements AccountService {
         CustomerDto dto = CustomerMapper.toCustomerDto(customer);
         dto.setAccountDto(AccountMapper.toAccountDto(account));
         return dto;
+    }
+
+    @Override
+    public boolean updateAccount(CustomerDto customerDto) {
+        AccountDto accountDto = customerDto.getAccountDto();
+        if (accountDto != null) {
+            Account account = accountRepository.findById(accountDto.getAccountNumber()).orElseThrow(
+                    () -> new ResourceNotFoundException("Account",
+                            "AccountNumber",
+                            accountDto.getAccountNumber().toString())
+            );
+            AccountMapper.toAccount(accountDto, account);
+            account = accountRepository.save(account);
+
+            Long customerId = account.getCustomerId();
+            Customer customer = customerRepository.findById(customerId).orElseThrow(
+                    () -> new ResourceNotFoundException("Customer",
+                            "customerID",
+                            customerId.toString())
+            );
+            CustomerMapper.toCustomer(customerDto, customer);
+            customerRepository.save(customer);
+            return true;
+        }
+        return false;
     }
 }

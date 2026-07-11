@@ -13,8 +13,7 @@ public class AccountMapper {
         return dto;
     }
 
-    public static Account toAccount(AccountDto dto) {
-        Account account = new Account();
+    public static Account toAccount(AccountDto dto, Account account) {
         account.setAccountNumber(dto.getAccountNumber());
         account.setAccountType(dto.getAccountType());
         account.setBranchAddress(dto.getBranchAddress());
