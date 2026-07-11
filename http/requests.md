@@ -32,9 +32,16 @@ Content-Type: application/json
     "email": "captain-new@fzero.com",
     "mobileNumber": "4354456778",
     "accountDto": {
-        "accountNumber": 428932,
+        "accountNumber": 227924,
         "accountType": "Savings",
         "branchAddress": "123 Main Street, New York"
     }
 }
+```
+
+## Delete Account & Customer
+
+```http
+DELETE http://localhost:8080/api/delete?mobileNumber=4354456778
+Content-Type: application/json
 ```
