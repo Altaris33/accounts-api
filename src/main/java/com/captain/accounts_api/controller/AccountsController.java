@@ -4,14 +4,18 @@ import com.captain.accounts_api.constants.AccountConstants;
 import com.captain.accounts_api.dto.CustomerDto;
 import com.captain.accounts_api.dto.ResponseDto;
 import com.captain.accounts_api.service.AccountService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
 import jakarta.websocket.server.PathParam;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(path = "/api", produces = {MediaType.APPLICATION_JSON_VALUE})
+@Validated
 public class AccountsController {
 
     private AccountService accountService;
@@ -22,6 +26,7 @@ public class AccountsController {
 
     @PostMapping("/create")
     public ResponseEntity<ResponseDto> createAccount(
+            @Valid
             @RequestBody CustomerDto customerDto) {
         accountService.createAccount(customerDto);
         return ResponseEntity
@@ -30,13 +35,18 @@ public class AccountsController {
     }
 
     @GetMapping("/fetch")
-    public ResponseEntity<CustomerDto> getCustomerById(@RequestParam("mobileNumber") String mobileNumber) {
+    public ResponseEntity<CustomerDto> getCustomerById(
+            @RequestParam
+            @Pattern(regexp = "(^$|[0-9]{10})", message = "Mobile number must be 10 digits")
+            String mobileNumber) {
         CustomerDto dto = accountService.fetchAccount(mobileNumber);
         return ResponseEntity.status(HttpStatus.OK).body(dto);
     }
 
     @PutMapping("/update")
-    public ResponseEntity<ResponseDto> updateAccountDetails(@RequestBody CustomerDto dto) {
+    public ResponseEntity<ResponseDto> updateAccountDetails(
+            @Valid
+            @RequestBody CustomerDto dto) {
         boolean updated = accountService.updateAccount(dto);
         if (updated) {
             return ResponseEntity
@@ -50,7 +60,10 @@ public class AccountsController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<ResponseDto> deleteAccount(@RequestParam String mobileNumber) {
+    public ResponseEntity<ResponseDto> deleteAccount(
+            @RequestParam
+            @Pattern(regexp = "(^$|[0-9]{10})", message = "Mobile number must be 10 digits")
+            String mobileNumber) {
         boolean deleted = accountService.deleteAccount(mobileNumber);
         if (deleted) {
             return ResponseEntity
