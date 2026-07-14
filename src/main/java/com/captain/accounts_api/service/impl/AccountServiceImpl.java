@@ -14,7 +14,6 @@ import com.captain.accounts_api.repository.CustomerRepository;
 import com.captain.accounts_api.service.AccountService;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Random;
 
@@ -39,10 +38,7 @@ public class AccountServiceImpl implements AccountService {
             throw new CustomerAlreadyExistsException("Customer already exists with this " +
                     "mobileNumber: " + customerDto.getMobileNumber());
         }
-        customer.setCreatedAt(LocalDateTime.now());
-        customer.setCreatedBy("Anonymous");
-        customer.setUpdatedAt(LocalDateTime.now());
-        customer.setUpdatedBy("Anonymous");
+
         Customer saved = customerRepository.save(customer);
         accountRepository.save(createNewAccount(saved));
     }
@@ -56,11 +52,6 @@ public class AccountServiceImpl implements AccountService {
 
         account.setAccountType(AccountConstants.SAVINGS);
         account.setBranchAddress(AccountConstants.ADDRESS);
-
-        account.setCreatedAt(LocalDateTime.now());
-        account.setCreatedBy("Anonymous");
-        account.setUpdatedAt(LocalDateTime.now());
-        account.setUpdatedBy("Anonymous");
 
         return account;
     }
